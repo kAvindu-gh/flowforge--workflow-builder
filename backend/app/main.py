@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import APP_NAME
 from app.database import Base, engine
-import app.models  # this line is new — registers models with SQLAlchemy
+from app.routers import workflows
+import app.models
 
 Base.metadata.create_all(bind=engine)
 
@@ -15,6 +16,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Register routers
+app.include_router(workflows.router)
 
 @app.get("/")
 def root():
