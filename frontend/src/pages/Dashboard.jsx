@@ -49,12 +49,12 @@ export default function Dashboard({ onOpenEditor }) {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
         <div>
-          <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#7c6af7' }}>FlowForge</h1>
+          <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#285ccc' }}>FlowForge</h1>
           <p style={{ color: '#64748b', marginTop: '4px' }}>Your workflow automations</p>
         </div>
         <button
           onClick={() => setCreating(true)}
-          style={{ background: '#7c6af7', color: 'white', padding: '10px 20px' }}
+          style={{ background: '#285ccc', color: '#fff2bd', padding: '10px 20px' }}
         >
           + New Workflow
         </button>
@@ -72,7 +72,7 @@ export default function Dashboard({ onOpenEditor }) {
             autoFocus
           />
           <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-            <button onClick={handleCreate} style={{ background: '#7c6af7', color: 'white' }}>
+            <button onClick={handleCreate} style={{ background: '#285ccc', color: '#fff2bd' }}>
               Create
             </button>
             <button onClick={() => setCreating(false)} style={{ background: '#2d3250', color: '#e2e8f0' }}>

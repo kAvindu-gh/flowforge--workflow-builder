@@ -1,4 +1,4 @@
-export default function NodeConfigPanel({ node, onUpdate, onClose }) {
+export default function NodeConfigPanel({ node, onUpdate, onClose, hasIncomingEdge }) {
   if (!node) return null
 
   const data     = node.data || {}
@@ -20,7 +20,6 @@ export default function NodeConfigPanel({ node, onUpdate, onClose }) {
       gap: '16px'
     }}>
 
-      {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <p style={{ fontWeight: '600', fontSize: '15px', color: '#fff2bd' }}>
           Configure Node
@@ -33,7 +32,6 @@ export default function NodeConfigPanel({ node, onUpdate, onClose }) {
         </button>
       </div>
 
-      {/* Node type badge */}
       <div style={{
         display: 'inline-block',
         background: '#285ccc22',
@@ -49,7 +47,6 @@ export default function NodeConfigPanel({ node, onUpdate, onClose }) {
         {nodeType}
       </div>
 
-      {/* Label — all node types have this */}
       <div>
         <label style={labelStyle}>Node Label</label>
         <input
@@ -59,7 +56,6 @@ export default function NodeConfigPanel({ node, onUpdate, onClose }) {
         />
       </div>
 
-      {/* HTTP node fields */}
       {nodeType === 'http' && (
         <>
           <div>
@@ -86,7 +82,6 @@ export default function NodeConfigPanel({ node, onUpdate, onClose }) {
         </>
       )}
 
-      {/* Delay node fields */}
       {nodeType === 'delay' && (
         <div>
           <label style={labelStyle}>Seconds to wait</label>
@@ -100,17 +95,36 @@ export default function NodeConfigPanel({ node, onUpdate, onClose }) {
         </div>
       )}
 
-      {/* Filter node fields */}
       {nodeType === 'filter' && (
         <>
-          <div>
-            <label style={labelStyle}>Value to check</label>
-            <input
-              type="number"
-              value={data.value || 0}
-              onChange={e => handleChange('value', parseFloat(e.target.value))}
-            />
-          </div>
+          {hasIncomingEdge && (
+            <label style={checkboxRow}>
+              <input
+                type="checkbox"
+                checked={!!data.useUpstream}
+                onChange={e => handleChange('useUpstream', e.target.checked)}
+              />
+              Use previous node's output as value
+            </label>
+          )}
+
+          {!data.useUpstream && (
+            <div>
+              <label style={labelStyle}>Value to check</label>
+              <input
+                type="number"
+                value={data.value || 0}
+                onChange={e => handleChange('value', parseFloat(e.target.value))}
+              />
+            </div>
+          )}
+
+          {data.useUpstream && (
+            <p style={hintStyle}>
+              Value will be read automatically from the connected node when this runs.
+            </p>
+          )}
+
           <div>
             <label style={labelStyle}>Operator</label>
             <select
@@ -136,17 +150,36 @@ export default function NodeConfigPanel({ node, onUpdate, onClose }) {
         </>
       )}
 
-      {/* Transform node fields */}
       {nodeType === 'transform' && (
         <>
-          <div>
-            <label style={labelStyle}>Text to transform</label>
-            <input
-              value={data.text || ''}
-              onChange={e => handleChange('text', e.target.value)}
-              placeholder="hello world"
-            />
-          </div>
+          {hasIncomingEdge && (
+            <label style={checkboxRow}>
+              <input
+                type="checkbox"
+                checked={!!data.useUpstream}
+                onChange={e => handleChange('useUpstream', e.target.checked)}
+              />
+              Use previous node's output as text
+            </label>
+          )}
+
+          {!data.useUpstream && (
+            <div>
+              <label style={labelStyle}>Text to transform</label>
+              <input
+                value={data.text || ''}
+                onChange={e => handleChange('text', e.target.value)}
+                placeholder="hello world"
+              />
+            </div>
+          )}
+
+          {data.useUpstream && (
+            <p style={hintStyle}>
+              Text will be read automatically from the connected node when this runs.
+            </p>
+          )}
+
           <div>
             <label style={labelStyle}>Operation</label>
             <select
@@ -162,8 +195,19 @@ export default function NodeConfigPanel({ node, onUpdate, onClose }) {
         </>
       )}
 
-      {/* Tip */}
-      <p style={{ fontSize: '12px', color: '#64748b', marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid #2d3250' }}>
+      {nodeType === 'unknown' && (
+        <p style={{ fontSize: '13px', color: '#64748b' }}>
+          This node has no configurable fields.
+        </p>
+      )}
+
+      <p style={{
+        fontSize: '12px',
+        color: '#64748b',
+        marginTop: 'auto',
+        paddingTop: '16px',
+        borderTop: '1px solid #2d3250'
+      }}>
         Changes apply instantly. Click Save to persist to database.
       </p>
 
@@ -190,4 +234,22 @@ const selectStyle = {
   fontSize: '14px',
   width: '100%',
   cursor: 'pointer'
+}
+
+const checkboxRow = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  fontSize: '13px',
+  color: '#e2e8f0',
+  cursor: 'pointer'
+}
+
+const hintStyle = {
+  fontSize: '12px',
+  color: '#285ccc',
+  background: '#285ccc15',
+  border: '1px solid #285ccc44',
+  borderRadius: '6px',
+  padding: '8px 10px'
 }
